@@ -10,6 +10,8 @@ A client for the Turkish website e-ikamet, that reduces the need to constantly c
 4. Send a POST request to e-ikamet with solved captcha and application details, parse results
 5. Send notification (in my example, to Telegram chat)
 
+### TODOs:
+- [ ] Better Error handling
 
 ### Env variables
 #### **`env.list`**
