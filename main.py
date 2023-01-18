@@ -3,7 +3,8 @@ import logging
 from captcha_provider import TwoCaptchaProvider
 from config import CAPTCHA_TOKEN, TELEGRAM_TOKEN, EMAIL, APPLICATION_ID, PASSPORT_NUMBER, TELEGRAM_CHAT_ID, LOG_LEVEL
 from ikamet.client import IkametClient
-from notifier import TelegramNotifier
+from notifier import TelegramNotifier, TransportError, TelegramError
+
 
 def main():
     client = IkametClient()
@@ -14,17 +15,20 @@ def main():
     logging.info('Downloaded captcha')
     solved_captcha = provider.solve_captcha(bytes)
     logging.info('Solved captcha')
+    message = ""
     try:
-        result = client.get_ikamet_result(application_id=APPLICATION_ID,
+        message = client.get_ikamet_result(application_id=APPLICATION_ID,
                                           email=EMAIL,
                                           foreign_passport_number=PASSPORT_NUMBER,
                                           captcha_id=_id,
                                           captcha_text=solved_captcha
                                           )
-        notifier.send_message(TELEGRAM_CHAT_ID, result)
     except ValueError as e:
-        notifier.send_message(TELEGRAM_CHAT_ID, str(e))
-    logging.info('Got result, sent to notifier')
+        message = str(e)
+    try:
+        notifier.send_message(TELEGRAM_CHAT_ID, message)
+    except (TransportError, TelegramError):
+        logging.info('Got result, sent to notifier')
 
 
 if __name__ == '__main__':

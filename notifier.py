@@ -3,6 +3,14 @@ from urllib.parse import urljoin
 import requests
 
 
+class TelegramError(Exception):
+    pass
+
+
+class TransportError(Exception):
+    pass
+
+
 class TelegramNotifier:
     HOST = "https://api.telegram.org/"
 
@@ -14,14 +22,15 @@ class TelegramNotifier:
 
     def get_me(self):
         r = requests.get(url=urljoin(self.uri, 'getMe'))
-        r.raise_for_status()
+        if r.status_code != 200:
+            raise TransportError(r.status_code)
         r = r.json()
         if not r["ok"]:
             if r["error_code"] == 401:
-                raise ValueError('Wrong Token')
-            raise ValueError(r["error_code"])
+                raise TelegramError('Wrong Token')
+            raise TelegramError(r["error_code"])
 
-    def send_message(self, chat_id: str, text: str, silent:bool = False):
+    def send_message(self, chat_id: str, text: str, silent: bool = False):
         data = {
             "chat_id": chat_id,
             "text": text
@@ -32,7 +41,8 @@ class TelegramNotifier:
             url=urljoin(self.uri, 'sendMessage'),
             data=data
         )
-        r.raise_for_status()
+        if r.status_code != 200:
+            raise TransportError(r.status_code)
         r = r.json()
         if not r["ok"]:
-            return ValueError('Failed to send message')
+            return TelegramError('Failed to send message')
