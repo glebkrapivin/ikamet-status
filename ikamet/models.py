@@ -55,3 +55,6 @@ class IkametRequest(BaseModel):
     islem_tur: Optional[int] = Field(None, alias='islemTur')
     captcha_de_text: Optional[str] = Field(None, alias='CaptchaDeText')
     captcha_input_text: Optional[str] = Field(None, alias='CaptchaInputText')
+
+    class Config:
+        allow_population_by_field_name = True
