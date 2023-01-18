@@ -39,7 +39,7 @@ class IkametClient:
     def _get_captcha_uri(self) -> str:
         r = self.r_session.get(self._get_uri('Ikamet/DevamEdenBasvuruGiris'))
         r.raise_for_status()
-        captcha_elem = BeautifulSoup(r.content).find(id='CaptchaImage')
+        captcha_elem = BeautifulSoup(r.content, 'html.parser').find(id='CaptchaImage')
         if not captcha_elem:
             raise ValueError('Element with ID=\"CaptchaImage\" was not found on the page')
         captcha_uri = captcha_elem.get('src')

@@ -8,7 +8,7 @@ class TelegramNotifier:
 
     def __init__(self, bot_token: str, check_token: bool = False):
         self.token = bot_token
-        self.uri = self.HOST + f'bot{self.token}'
+        self.uri = self.HOST + f'bot{self.token}/'
         if check_token:
             self.get_me()
 
