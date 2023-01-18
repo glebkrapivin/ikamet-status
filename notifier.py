@@ -21,11 +21,13 @@ class TelegramNotifier:
                 raise ValueError('Wrong Token')
             raise ValueError(r["error_code"])
 
-    def send_message(self, chat_id: str, text: str):
+    def send_message(self, chat_id: str, text: str, silent:bool = False):
         data = {
             "chat_id": chat_id,
             "text": text
         }
+        if silent:
+            data["disable_notification"] = True
         r = requests.post(
             url=urljoin(self.uri, 'sendMessage'),
             data=data
