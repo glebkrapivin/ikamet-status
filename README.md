@@ -2,6 +2,7 @@
 
 A client for the Turkish website e-ikamet, that reduces the need to constantly check results for the residence permit application.
 
+It is nothing close to production code, just a small pet project to easy my life a for a bit. 
 ### Logic
 
 1. Get residence application HTML, parse it to get server-side generated catpcha_id
