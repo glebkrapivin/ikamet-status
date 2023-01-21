@@ -15,6 +15,8 @@ class TelegramNotifier:
     HOST = "https://api.telegram.org/"
 
     def __init__(self, bot_token: str, check_token: bool = False):
+        if not bot_token:
+            raise TelegramError('No token')
         self.token = bot_token
         self.uri = self.HOST + f'bot{self.token}/'
         if check_token:
