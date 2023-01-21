@@ -1,6 +1,6 @@
 import logging
 
-from captcha_provider import TwoCaptchaProvider
+from captcha_provider import TwoCaptchaProvider, TwoCaptchaType
 from config import CAPTCHA_TOKEN, TELEGRAM_TOKEN, EMAIL, APPLICATION_ID, PASSPORT_NUMBER, TELEGRAM_CHAT_ID, LOG_LEVEL, \
     N_RETRIES
 from ikamet.client import IkametClient, IkametError
@@ -10,7 +10,7 @@ from notifier import TelegramNotifier, TransportError, TelegramError
 def get_result(client: IkametClient, provider: TwoCaptchaProvider):
     _id, bytes = client.get_captcha()
     logging.info('Downloaded captcha')
-    solved_captcha = provider.solve_captcha(bytes)
+    solved_captcha = provider.solve_captcha(bytes, TwoCaptchaType.NORMAL)
     logging.info('Solved captcha')
     message = client.get_ikamet_result(application_id=APPLICATION_ID,
                                        email=EMAIL,
