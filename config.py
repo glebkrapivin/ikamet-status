@@ -11,3 +11,5 @@ PASSPORT_NUMBER = env.get('PASSPORT_NUMBER')
 PHONE_NUMBER = env.get('PHONE_NUMBER')
 
 LOG_LEVEL = env.get('LOG_LEVEL')
+
+N_RETRIES = int(env.get('N_RETRIES', 2))
