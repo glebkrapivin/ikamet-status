@@ -26,7 +26,7 @@ def main():
     provider = TwoCaptchaProvider(CAPTCHA_TOKEN)
     notifier = TelegramNotifier(TELEGRAM_TOKEN, check_token=True)
 
-    message = ""
+    message = "UNKNOWN_ERROR"
     for i in range(1, N_RETRIES + 1):
         logging.info('Starting attempt #%s', i)
         try:

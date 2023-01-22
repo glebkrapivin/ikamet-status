@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
 import requests
+import logging
 
 
 class TelegramError(Exception):
@@ -33,6 +34,7 @@ class TelegramNotifier:
             raise TelegramError(r["error_code"])
 
     def send_message(self, chat_id: str, text: str, silent: bool = False):
+        logging.debug('chat_id %s, text %s, silent %s', chat_id, text, silent)
         data = {
             "chat_id": chat_id,
             "text": text
@@ -44,7 +46,7 @@ class TelegramNotifier:
             data=data
         )
         if r.status_code != 200:
-            raise TransportError(r.status_code)
+            raise TransportError(r.status_code+r.text)
         r = r.json()
         if not r["ok"]:
             return TelegramError('Failed to send message')
