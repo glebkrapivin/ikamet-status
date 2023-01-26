@@ -3,7 +3,7 @@ import logging
 from captcha_provider import TwoCaptchaProvider, TwoCaptchaType
 from config import CAPTCHA_TOKEN, TELEGRAM_TOKEN, EMAIL, APPLICATION_ID, PASSPORT_NUMBER, TELEGRAM_CHAT_ID, LOG_LEVEL, \
     N_RETRIES
-from ikamet.client import IkametClient, IkametError
+from ikamet.client import IkametClient, IkametError, IkametStatus
 from notifier import TelegramNotifier, TransportError, TelegramError
 
 
@@ -21,16 +21,25 @@ def get_result(client: IkametClient, provider: TwoCaptchaProvider):
     return message
 
 
+STATUS_2_MESSAGE = {
+    IkametStatus.ACCEPTED: "Your application has been approved",
+    IkametStatus.REJECTED: "Your application has been rejected",
+    IkametStatus.NOT_PROCESSED: "Your application has not been processed yet",
+    IkametStatus.IS_PROCESSED: "Your application is being processed now",
+    IkametStatus.UNKNOWN: "Check website, your application has unknown status"
+}
+
+
 def main():
     client = IkametClient()
     provider = TwoCaptchaProvider(CAPTCHA_TOKEN)
     notifier = TelegramNotifier(TELEGRAM_TOKEN, check_token=True)
 
-    message = "UNKNOWN_ERROR"
+    message = "Unknown Error"
     for i in range(1, N_RETRIES + 1):
         logging.info('Starting attempt #%s', i)
         try:
-            message = get_result(client, provider)
+            message = STATUS_2_MESSAGE[get_result(client, provider)]
             break
         # do better error handling than this :)
         except (IkametError, Exception) as e:

@@ -1,12 +1,13 @@
 import logging
+from enum import Enum
 from urllib.parse import urljoin, urlparse, parse_qs
 
 import pydantic
 import requests
 from bs4 import BeautifulSoup
 
-from ikamet.models import IkametRequest, IkametResponse
 from ikamet.consts import BAD_CAPTCHA_IMAGE
+from ikamet.models import IkametRequest, IkametResponse
 
 ACCEPT_HEADER_CAPTCHA_PAGE = 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
 
@@ -23,6 +24,14 @@ DEFAULT_HEADERS = {
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"macOS"',
 }
+
+
+class IkametStatus(Enum):
+    NOT_PROCESSED = 1
+    ACCEPTED = 2
+    REJECTED = 3
+    IS_PROCESSED = 4
+    UNKNOWN = 5
 
 
 class IkametError(Exception):
@@ -82,7 +91,7 @@ class IkametClient:
                           email: str = None,
                           foreign_passport_number: str = None,
                           turkish_id_number: str = None,
-                          ) -> str:
+                          ) -> IkametStatus:
 
         if not ((phone_number and not email) or (not phone_number and email)):
             raise IkametError('Provide number or email')
@@ -111,7 +120,7 @@ class IkametClient:
             if not response.result.donus_degerleri:
                 raise IkametError('Application not found')
             if not response.result.id:
-                return 'NOT_PROCESSED'
-            return str(response.result)
+                return IkametStatus.NOT_PROCESSED
+            return IkametStatus.UNKNOWN
         if not response.success:
             raise IkametError(str(response.errors))
