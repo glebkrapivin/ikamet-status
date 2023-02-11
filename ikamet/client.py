@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from urllib.parse import urljoin, urlparse, parse_qs
-
+import ipdb
 import pydantic
 import requests
 from bs4 import BeautifulSoup
@@ -28,10 +28,11 @@ DEFAULT_HEADERS = {
 
 class IkametStatus(Enum):
     NOT_PROCESSED = 1
-    ACCEPTED = 2
-    REJECTED = 3
+    ACCEPTED = 2 # not used, cant distinguish
+    REJECTED = 3 # not used, cant distinguish
     IS_PROCESSED = 4
     UNKNOWN = 5
+    FINISHED = 6
 
 
 class IkametError(Exception):
@@ -112,15 +113,14 @@ class IkametClient:
             response: IkametResponse = IkametResponse.parse_raw(r.content)
         except pydantic.ValidationError:
             raise IkametError('Unknown response from website')
-        logging.debug('Reponse: %s', response)
 
-        # No info about the response when the application is actually processed
-        # so return NO_RESULT if there is no result_id otherwise the whole result object
         if response.success:
             if not response.result.donus_degerleri:
                 raise IkametError('Application not found')
-            if not response.result.id:
-                return IkametStatus.NOT_PROCESSED
-            return IkametStatus.UNKNOWN
         if not response.success:
             raise IkametError(str(response.errors))
+
+        r = self.r_session.get(self._get_uri('Ikamet/DevamEdenBasvuruGiris'))
+        if 'BasvuruDurum' not in r.url:
+            return IkametStatus.NOT_PROCESSED
+        return IkametStatus.FINISHED
