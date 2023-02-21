@@ -26,7 +26,8 @@ STATUS_2_MESSAGE = {
     IkametStatus.REJECTED: "Your application has been rejected",
     IkametStatus.NOT_PROCESSED: "Your application has not been processed yet",
     IkametStatus.IS_PROCESSED: "Your application is being processed now",
-    IkametStatus.UNKNOWN: "Check website, your application has unknown status"
+    IkametStatus.UNKNOWN: "Check website, your application has unknown status",
+    IkametStatus.FINISHED: "Your application has been finished, check website"
 }
 
 
